@@ -29,6 +29,5 @@ app.add_handler(CommandHandler("today", today))
 app.add_handler(CommandHandler("tomorrow", tomorrow))
 app.add_handler(CommandHandler("week", week))
 
-print("🤖 Bot Started...")
 
 app.run_polling()
