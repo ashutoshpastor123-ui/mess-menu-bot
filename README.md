@@ -1,0 +1,1 @@
+this is mess menu bot which tell was connected to telegram by Api key where we get schedule of mess food like today food tomorrow food and other currently I am working for reminder system . in current project i have used Claude, chat gpt , gemini and railway as cloud
