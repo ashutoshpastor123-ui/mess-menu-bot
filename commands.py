@@ -6,11 +6,11 @@ from excel_reader import get_day_menu
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "👋 Welcome to Mess Reminder Bot!\n\n"
-        "Available Commands:\n"
-        "/today\n"
-        "/tomorrow\n"
-        "/week"
+        "👋 Welcome to boku ji ke rasoi !\n\n\n"
+        "   Available Commands:\n\n\n"
+        "           /today\n\n\n"
+        "           /tomorrow\n\n\n"
+        "           /week"
     )
 
 
