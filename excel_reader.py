@@ -1,33 +1,20 @@
 from openpyxl import load_workbook
 
-DAY_COLUMNS = {
-    "Monday": 3,
-    "Tuesday": 4,
-    "Wednesday": 5,
-    "Thursday": 6,
-    "Friday": 7,
-    "Saturday": 8,
-    "Sunday": 9
-}
-
 def get_day_menu(day):
-
     workbook = load_workbook("menu.xlsx")
     sheet = workbook.active
 
-    col = DAY_COLUMNS[day]
-
     menu = {}
 
-    for row in sheet.iter_rows(min_row=2):
+    for row in sheet.iter_rows(min_row=3, values_only=True):
+        if row[0] == day:
+            menu = {
+                "Breakfast": row[1],
+                "Lunch": row[2],
+                "Snacks": row[3],
+                "Dinner": row[4]
+            }
+            break
 
-        meal = row[0].value
-
-        if meal is None:
-            continue
-
-        meal_name = meal.split()[0].capitalize()
-
-        menu[meal_name] = row[col - 1].value
-
+    workbook.close()
     return menu
