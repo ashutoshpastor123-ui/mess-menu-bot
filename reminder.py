@@ -24,15 +24,6 @@ bot = Bot(BOT_TOKEN)
 
 scheduler = BackgroundScheduler()
 
-DAY_COLUMNS = {
-    "Monday": 3,
-    "Tuesday": 4,
-    "Wednesday": 5,
-    "Thursday": 6,
-    "Friday": 7,
-    "Saturday": 8,
-    "Sunday": 9
-}
 
 MENU_DATA = {}
 

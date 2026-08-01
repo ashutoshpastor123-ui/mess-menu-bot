@@ -11,6 +11,7 @@ logging.basicConfig(level=logging.INFO)
 
 load_dotenv()
 
+
 TOKEN = os.getenv("BOT_TOKEN")
 
 async def post_init(application):
