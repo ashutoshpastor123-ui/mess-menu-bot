@@ -15,7 +15,9 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-CHAT_ID = os.getenv("CHAT_ID")
+CHAT_ID1= os.getenv("CHAT_ID1")
+CHAT_ID2= os.getenv("CHAT_ID2")
+CHAT_ID3= os.getenv("CHAT_ID3")
 
 if not BOT_TOKEN or not CHAT_ID:
     raise ValueError("BOT_TOKEN and CHAT_ID must be set")
