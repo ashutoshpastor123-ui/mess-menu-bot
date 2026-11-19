@@ -9,6 +9,7 @@ import os
 import asyncio
 import logging
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 load_dotenv()
 
@@ -20,54 +21,75 @@ BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
 
 if not BOT_TOKEN or not CHAT_ID:
-    raise ValueError("BOT_TOKEN and CHAT_ID must be set in environment variables")
+    raise ValueError("BOT_TOKEN and CHAT_ID must be set")
 
 # Telegram bot
 bot = Bot(BOT_TOKEN)
 
-# Scheduler (Indian timezone)
-scheduler = BackgroundScheduler(timezone="Asia/Kolkata")
+# Indian timezone
+IST = ZoneInfo("Asia/Kolkata")
 
-MENU_DATA = {}
+# Scheduler
+scheduler = BackgroundScheduler(timezone=IST)
 
 
-def load_menu():
-    global MENU_DATA
+def get_menu_for_day(day_name):
+    """Open Excel only when menu is requested."""
+
+    workbook = None
 
     try:
-        workbook = load_workbook("menu.xlsx")
+        workbook = load_workbook(
+            "menu.xlsx",
+            read_only=True,
+            data_only=True
+        )
+
         sheet = workbook.active
 
-        MENU_DATA = {}
-
         for row in sheet.iter_rows(min_row=3, values_only=True):
+
             day = row[0]
 
             if not day:
                 continue
 
-            MENU_DATA[day] = {
-                "BREAKFAST": row[1],
-                "LUNCH": row[2],
-                "SNACKS": row[3],
-                "DINNER": row[4]
-            }
+            if str(day).strip().lower() == day_name.lower():
 
-        workbook.close()
-        logger.info("Menu loaded successfully")
+                return {
+                    "BREAKFAST": row[1],
+                    "LUNCH": row[2],
+                    "SNACKS": row[3],
+                    "DINNER": row[4]
+                }
+
+        logger.warning("Menu not found for %s", day_name)
+        return None
 
     except Exception as e:
-        logger.exception("Failed to load menu: %s", e)
+        logger.exception("Failed to read Excel: %s", e)
+        return None
+
+    finally:
+        if workbook:
+            workbook.close()
 
 
 async def send_reminder(meal):
-    try:
-        today = datetime.now().strftime("%A")
 
-        menu = MENU_DATA.get(today, {}).get(meal)
+    try:
+        today = datetime.now(IST).strftime("%A")
+
+        # Read Excel only when reminder is due
+        menu_data = get_menu_for_day(today)
+
+        if not menu_data:
+            return
+
+        menu = menu_data.get(meal)
 
         if not menu:
-            logger.warning("No menu found for %s on %s", meal, today)
+            logger.warning("No %s menu for %s", meal, today)
             return
 
         await bot.send_message(
@@ -106,20 +128,12 @@ def dinner():
 
 
 def start_scheduler():
+
     if scheduler.running:
         logger.warning("Scheduler is already running")
         return
 
-    load_menu()
-
-    scheduler.add_job(
-        load_menu,
-        "cron",
-        hour=0,
-        minute=0,
-        id="reload_menu",
-        replace_existing=True
-    )
+    # No Excel reading during startup
 
     scheduler.add_job(
         breakfast,
@@ -163,6 +177,7 @@ def start_scheduler():
 
 
 def stop_scheduler():
+
     if scheduler.running:
         scheduler.shutdown()
         logger.info("Scheduler stopped")
