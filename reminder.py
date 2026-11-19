@@ -19,7 +19,7 @@ CHAT_ID1= os.getenv("CHAT_ID1")
 CHAT_ID2= os.getenv("CHAT_ID2")
 CHAT_ID3= os.getenv("CHAT_ID3")
 
-if not BOT_TOKEN or not CHAT_ID1 or not  CHAT_ID2 or not CHAT_ID3:
+if not BOT_TOKEN or not CHAT_ID1:
     raise ValueError("BOT_TOKEN and CHAT_IDS must be set")
 
 bot = Bot(BOT_TOKEN)
